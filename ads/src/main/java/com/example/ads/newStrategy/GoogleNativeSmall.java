@@ -22,7 +22,7 @@ public class GoogleNativeSmall {
     final private int totalLevels = 4;
     private ArrayList<ArrayList<Object>> adUnits;
 
-    private final String adUnitId = "ca-app-pub-3940256099942544/2247696110";
+    private final String adUnitId = "ca-app-pub-9507635869843997/3843368787";
 
     public GoogleNativeSmall(Context context) {
         instantiateList();

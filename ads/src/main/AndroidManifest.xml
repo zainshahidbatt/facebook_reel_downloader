@@ -6,6 +6,6 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-9507635869843997~2950672090" />
+            android:value="ca-app-pub-9507635869843997~6462643323" />
     </application>
 </manifest>

@@ -30,7 +30,7 @@ public class GoogleBanner {
     public static final String BANNER_FOURTH = "ca-app-pub-9781925194514571/4688435804";
     public static final String BANNER_FIFTH = "ca-app-pub-9781925194514571/4688435804";
 
-    private final String adUnitId = "ca-app-pub-9781925194514571/4688435804";
+    private final String adUnitId = "ca-app-pub-9507635869843997/2164305669";
 
     private ArrayList<ArrayList<Object>> adUnits;
     final private int totalLevels = 4;

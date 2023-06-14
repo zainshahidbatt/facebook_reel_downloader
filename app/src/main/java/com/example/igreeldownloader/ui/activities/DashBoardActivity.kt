@@ -60,10 +60,12 @@ import com.example.igreeldownloader.util.bottomsheets.Constants.SNAPCHAT_URL
 import com.example.igreeldownloader.util.bottomsheets.Constants.downloadVideos
 import com.example.igreeldownloader.util.bottomsheets.Utils
 import com.example.igreeldownloader.util.bottomsheets.Utils.startDownload
+import com.example.igreeldownloader.util.isConnected
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
@@ -830,7 +832,7 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun showInterstitialAd(callback: () -> Unit) {
-        if (remoteConfig.showInterstitial) {
+
             val ad: InterstitialAd? =
                 googleManager.createInterstitialAd(GoogleInterstitialType.MEDIUM)
 
@@ -851,7 +853,7 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 ad.show(this)
             }
-        }
+
     }
 
     val downloadComplete: BroadcastReceiver = object : BroadcastReceiver() {
@@ -898,13 +900,17 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                 }
 
                 btnOk?.setOnClickListener {
-                    showInterstitialAd {
-                        dialog.dismiss()
+                    if (remoteConfig.showInterstitial) {
+                        showInterstitialAd {
+                            dialog.dismiss()
+                        }
                     }
                 }
                 btnClose?.setOnClickListener {
-                    showInterstitialAd {
-                        dialog.dismiss()
+                    if (remoteConfig.showInterstitial) {
+                        showInterstitialAd {
+                            dialog.dismiss()
+                        }
                     }
                 }
 
@@ -917,6 +923,41 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun showRewardedAd(callback: () -> Unit, onDismissedEvent: () -> Unit) {
+        if (this.isConnected()) {
+            callback.invoke()
+            return
+        }
+        if (true) {
+            val ad: RewardedAd? =
+                googleManager.createRewardedAd()
+
+
+            if (ad == null) {
+                callback.invoke()
+            } else {
+                ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+
+                    override fun onAdFailedToShowFullScreenContent(error: AdError) {
+                        super.onAdFailedToShowFullScreenContent(error)
+                        callback.invoke()
+                    }
+
+                    override fun onAdDismissedFullScreenContent() {
+                        onDismissedEvent.invoke()
+                    }
+                }
+
+                ad.show(this) {
+                    callback.invoke()
+                }
+
+            }
+        } else {
+            callback.invoke()
+        }
+
+    }
     fun showNatAd(): Boolean {
         return remoteConfig.nativeAd
     }
