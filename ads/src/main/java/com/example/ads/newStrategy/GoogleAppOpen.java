@@ -20,7 +20,7 @@ public class GoogleAppOpen {
     final private int totalLevels = 4;
     private ArrayList<ArrayList<Object>> adUnits;
 
-    private final String adUnitId = "ca-app-pub-3940256099942544/3419835294";
+    private final String adUnitId = "ca-app-pub-9507635869843997/5504784878";
 
     public GoogleAppOpen(Context context) {
         instantiateList();
