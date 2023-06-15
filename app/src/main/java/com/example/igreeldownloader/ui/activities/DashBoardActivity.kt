@@ -106,11 +106,6 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        this@DashBoardActivity.onBackPressedDispatcher.addCallback(this) {
-            finishAffinity()
-            exitProcess(0)
-        }
-
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -140,6 +135,47 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
         observe()
         showNativeAd()
         drawerClicks()
+        this@DashBoardActivity.onBackPressedDispatcher.addCallback(this) {
+            finishAffinity()
+            exitProcess(0)
+        }
+    }
+
+    private fun enterValidLink() {
+        val dialog = BottomSheetDialog(this, R.style.SheetDialog)
+        dialog.setContentView(R.layout.dialog_invalid_link)
+        val btnOk = dialog.findViewById<Button>(R.id.btn_clear)
+        val cross = dialog.findViewById<ImageView>(R.id.ivCross)
+        val adView = dialog.findViewById<FrameLayout>(R.id.nativeViewInvalid)
+        if (remoteConfig.nativeAd) {
+            nativeAd = googleManager.createNativeAdSmall()
+            nativeAd?.let {
+                val nativeAdLayoutBinding =
+                    NativeAdBannerLayoutBinding.inflate(layoutInflater)
+                nativeAdLayoutBinding.nativeAdView.loadNativeAd(ad = it)
+                adView?.removeAllViews()
+                adView?.addView(nativeAdLayoutBinding.root)
+                adView?.visibility = View.VISIBLE
+            }
+        }
+
+        dialog.behavior.isDraggable = false
+        dialog.setCanceledOnTouchOutside(false)
+
+        btnOk?.setOnClickListener {
+            showInterstitialAd {
+                dialog.dismiss()
+                recreate();
+            }
+        }
+        cross?.setOnClickListener {
+            showInterstitialAd {
+                dialog.dismiss()
+                recreate();
+            }
+        }
+
+        dialog.show()
     }
 
     private fun observe() {
@@ -177,6 +213,10 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                 if (ll == "") {
                     Utils.setToast(this@DashBoardActivity, resources.getString(R.string.enter_url))
                 } else if (!Patterns.WEB_URL.matcher(ll).matches()) {
+
+                    enterValidLink()
+
+
                     Utils.setToast(
                         this@DashBoardActivity,
                         resources.getString(R.string.enter_valid_url)
@@ -664,7 +704,7 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
             //if link not found
             if (link == null || link == "") {
                 Log.d("jejeDRS", "Empty $link")
-                val dialog = BottomSheetDialog(this,R.style.SheetDialog)
+                val dialog = BottomSheetDialog(this, R.style.SheetDialog)
                 dialog.setContentView(R.layout.dialog_bottom_video_not_found_)
                 val btnOk = dialog.findViewById<Button>(R.id.btn_clear)
 
@@ -826,26 +866,26 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun showInterstitialAd(callback: () -> Unit) {
 
-            val ad: InterstitialAd? =
-                googleManager.createInterstitialAd(GoogleInterstitialType.MEDIUM)
+        val ad: InterstitialAd? =
+            googleManager.createInterstitialAd(GoogleInterstitialType.MEDIUM)
 
-            if (ad == null) {
-                callback.invoke()
-                return
-            } else {
-                ad.fullScreenContentCallback = object : FullScreenContentCallback() {
-                    override fun onAdDismissedFullScreenContent() {
-                        super.onAdDismissedFullScreenContent()
-                        callback.invoke()
-                    }
-
-                    override fun onAdFailedToShowFullScreenContent(error: AdError) {
-                        super.onAdFailedToShowFullScreenContent(error)
-                        callback.invoke()
-                    }
+        if (ad == null) {
+            callback.invoke()
+            return
+        } else {
+            ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+                override fun onAdDismissedFullScreenContent() {
+                    super.onAdDismissedFullScreenContent()
+                    callback.invoke()
                 }
-                ad.show(this)
+
+                override fun onAdFailedToShowFullScreenContent(error: AdError) {
+                    super.onAdFailedToShowFullScreenContent(error)
+                    callback.invoke()
+                }
             }
+            ad.show(this)
+        }
 
     }
 
