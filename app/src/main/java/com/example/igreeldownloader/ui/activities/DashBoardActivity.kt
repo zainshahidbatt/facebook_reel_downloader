@@ -657,7 +657,7 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
             //if link not found
             if (link == null || link == "") {
                 Log.d("jejeDRS", "Empty $link")
-                val dialog = BottomSheetDialog(this)
+                val dialog = BottomSheetDialog(this,R.style.SheetDialog)
                 dialog.setContentView(R.layout.dialog_bottom_video_not_found_)
                 val btnOk = dialog.findViewById<Button>(R.id.btn_clear)
 
