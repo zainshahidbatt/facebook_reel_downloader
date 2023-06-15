@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:drawable="@drawable/logo_sec"
-        android:gravity="center"></item>
-    <item android:drawable="@drawable/logo_first">
-
-    </item>
-</layer-list>

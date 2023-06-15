@@ -1,11 +1,11 @@
-package com.example.igreeldownloader.util.bottomsheets;
+package com.example.igreeldownloader.util;
 
-import static com.example.igreeldownloader.util.bottomsheets.Constants.downloadVideos;
-import static com.example.igreeldownloader.util.bottomsheets.Utils.RootDirectoryFacebook;
-import static com.example.igreeldownloader.util.bottomsheets.Utils.RootDirectoryInsta;
-import static com.example.igreeldownloader.util.bottomsheets.Utils.RootDirectoryLikee;
-import static com.example.igreeldownloader.util.bottomsheets.Utils.RootDirectoryMoz;
-import static com.example.igreeldownloader.util.bottomsheets.Utils.RootDirectorySnapchat;
+import static com.example.igreeldownloader.util.Constants.downloadVideos;
+import static com.example.igreeldownloader.util.Utils.RootDirectoryFacebook;
+import static com.example.igreeldownloader.util.Utils.RootDirectoryInsta;
+import static com.example.igreeldownloader.util.Utils.RootDirectoryLikee;
+import static com.example.igreeldownloader.util.Utils.RootDirectoryMoz;
+import static com.example.igreeldownloader.util.Utils.RootDirectorySnapchat;
 
 import android.app.DownloadManager;
 import android.app.Service;

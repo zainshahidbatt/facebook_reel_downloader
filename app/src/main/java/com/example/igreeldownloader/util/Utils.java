@@ -1,4 +1,4 @@
-package com.example.igreeldownloader.util.bottomsheets;
+package com.example.igreeldownloader.util;
 
 import static android.content.Context.DOWNLOAD_SERVICE;
 import static android.os.Environment.DIRECTORY_DOWNLOADS;

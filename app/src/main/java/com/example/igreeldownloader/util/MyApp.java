@@ -1,4 +1,4 @@
-package com.example.igreeldownloader.util.bottomsheets;
+package com.example.igreeldownloader.util;
 
 import android.os.Bundle;
 

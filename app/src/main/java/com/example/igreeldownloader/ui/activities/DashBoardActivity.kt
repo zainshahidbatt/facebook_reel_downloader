@@ -22,7 +22,6 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -48,24 +47,20 @@ import com.example.igreeldownloader.models.FVideo
 import com.example.igreeldownloader.models.FacebookReel
 import com.example.igreeldownloader.models.FacebookVideo
 import com.example.igreeldownloader.models.InstaVideo
+import com.example.igreeldownloader.models.ListAdapter
 import com.example.igreeldownloader.remote.RemoteConfig
-import com.example.igreeldownloader.ui.MainViewModel
-import com.example.igreeldownloader.util.adapters.ListAdapter
-import com.example.igreeldownloader.util.bottomsheets.Constants
-import com.example.igreeldownloader.util.bottomsheets.Constants.FACEBOOK_URL
-import com.example.igreeldownloader.util.bottomsheets.Constants.INSTA_URL
-import com.example.igreeldownloader.util.bottomsheets.Constants.LIKEE_url
-import com.example.igreeldownloader.util.bottomsheets.Constants.MOZ_URL
-import com.example.igreeldownloader.util.bottomsheets.Constants.SNAPCHAT_URL
-import com.example.igreeldownloader.util.bottomsheets.Constants.downloadVideos
-import com.example.igreeldownloader.util.bottomsheets.Utils
-import com.example.igreeldownloader.util.bottomsheets.Utils.startDownload
-import com.example.igreeldownloader.util.isConnected
+import com.example.igreeldownloader.util.Constants.FACEBOOK_URL
+import com.example.igreeldownloader.util.Constants.INSTA_URL
+import com.example.igreeldownloader.util.Constants.LIKEE_url
+import com.example.igreeldownloader.util.Constants.MOZ_URL
+import com.example.igreeldownloader.util.Constants.SNAPCHAT_URL
+import com.example.igreeldownloader.util.Constants.downloadVideos
+import com.example.igreeldownloader.util.Utils
+import com.example.igreeldownloader.util.Utils.startDownload
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.nativead.NativeAd
-import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
@@ -76,11 +71,11 @@ import java.io.File
 import java.net.URL
 import javax.inject.Inject
 
+@Suppress("DEPRECATION", "IMPLICIT_BOXING_IN_IDENTITY_EQUALS")
 @AndroidEntryPoint
 class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
 
     lateinit var binding: ActivityHomeBinding
-    private val viewModel by viewModels<MainViewModel>()
 
     private var nativeAd: NativeAd? = null
 
@@ -97,9 +92,9 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
     private val TAG = "MainActivity"
     private val strName = "facebook"
     private val strNameSecond = "fb"
-    var actionBarDrawerToggle: ActionBarDrawerToggle? = null
-    var urlType = 0
-    var adapter: ListAdapter? = null
+    private var actionBarDrawerToggle: ActionBarDrawerToggle? = null
+    private var urlType = 0
+    private var adapter: ListAdapter? = null
     var videos: ArrayList<FVideo>? = null
     var db: Database? = null
     private var downloadAPIInterface: DownloadAPIInterface? = null
@@ -183,16 +178,16 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                     //Recheck url type if it previously no checked
                     if (urlType == 0) {
                         urlType =
-                            if (Utils.isInstaUrl(ll)) Constants.INSTA_URL else if (Utils.isSnapChatUrl(
+                            if (Utils.isInstaUrl(ll)) INSTA_URL else if (Utils.isSnapChatUrl(
                                     ll
                                 )
                             ) {
-                                Constants.SNAPCHAT_URL
+                                SNAPCHAT_URL
                             } else if (Utils.isLikeeUrl(ll)) {
-                                Constants.LIKEE_url
+                                LIKEE_url
                             } else if (Utils.isMojUrl(ll)) {
-                                Constants.MOZ_URL
-                            } else Constants.FACEBOOK_URL
+                                MOZ_URL
+                            } else FACEBOOK_URL
                     }
                     when (urlType) {
                         FACEBOOK_URL -> getFacebookData()
@@ -219,10 +214,6 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
         Log.d(TAG, "onResume: is called")
     }
 
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (actionBarDrawerToggle!!.onOptionsItemSelected(item)) {
@@ -311,7 +302,7 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
             adapter = ListAdapter(
                 this@DashBoardActivity
             ) { video ->
-                when (video.getState()) {
+                when (video.state) {
                     FVideo.DOWNLOADING ->                         //video is in download state
                         Toast.makeText(
                             applicationContext,
@@ -330,7 +321,7 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
 
                     FVideo.COMPLETE -> {
                         //complete download and processing ready to use
-                        val location: String = video.getFileUri()
+                        val location: String = video.fileUri
 
 
                         //Downloaded video play into video player
@@ -340,7 +331,7 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                             val intent1 = Intent(Intent.ACTION_VIEW)
                             if (Utils.isVideoFile(
                                     applicationContext,
-                                    video.getFileUri()
+                                    video.fileUri
                                 )
                             ) {
                                 intent1.setDataAndType(
@@ -366,14 +357,14 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                             Log.d(TAG, "onItemClickListener: file " + file.path)
 
                             //Delete the video instance from the list
-                            db?.deleteAVideo(video.getDownloadId())
+                            db?.deleteAVideo(video.downloadId)
                         }
                     }
                 }
             }
-            recyclerView.setLayoutManager(LinearLayoutManager(this@DashBoardActivity))
+            recyclerView.layoutManager = LinearLayoutManager(this@DashBoardActivity)
             updateListData()
-            recyclerView?.setAdapter(adapter)
+            recyclerView.adapter = adapter
             ItemTouchHelper(object :
                 ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
                 override fun onMove(
@@ -386,7 +377,7 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val adapterPosition = viewHolder.adapterPosition
-                    db?.deleteAVideo(videos!![adapterPosition].getDownloadId())
+                    db?.deleteAVideo(videos!![adapterPosition].downloadId)
                 }
             }).attachToRecyclerView(recyclerView)
 
@@ -396,9 +387,9 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
     /**
      * this function update the listAdapter data form the database
      */
-    fun updateListData() {
+    private fun updateListData() {
         binding.apply {
-            videos = db?.getRecentVideos()
+            videos = db?.recentVideos
         }
     }
 
@@ -421,7 +412,7 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                         "OK",
                         "Cancel"
                     )
-                }.request { allGranted, grantedList, deniedList ->
+                }.request { allGranted, _, _ ->
                     if (allGranted) {
                         Toast.makeText(
                             applicationContext,
@@ -457,7 +448,7 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                         "OK",
                         "Cancel"
                     )
-                }.request { allGranted, grantedList, deniedList -> /*if (allGranted) {
+                }.request { _, _, _ -> /*if (allGranted) {
                                         Toast.makeText(MainActivity.this, "All permissions are granted", Toast.LENGTH_LONG).show();
                                     } else {
                                         Toast.makeText(MainActivity.this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show();
@@ -508,7 +499,7 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                             if (response.isSuccessful) {
                                 val facebookVideo = response.body()
                                 if (facebookVideo == null) {
-                                    showStartDownloadDialogR("", Constants.FACEBOOK_URL)
+                                    showStartDownloadDialogR("", FACEBOOK_URL)
                                     return
                                 }
                                 if (!facebookVideo.error) {
@@ -523,19 +514,19 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                                         }
                                     }
                                     if (map.containsKey("hd")) {
-                                        showStartDownloadDialogR(map["hd"], Constants.FACEBOOK_URL)
+                                        showStartDownloadDialogR(map["hd"], FACEBOOK_URL)
                                     } else if (map.containsKey("sd")) {
-                                        showStartDownloadDialogR(map["sd"], Constants.FACEBOOK_URL)
+                                        showStartDownloadDialogR(map["sd"], FACEBOOK_URL)
                                     } else Log.d("MainActivity.TAG", "onResponse: map is null")
                                 } else {
-                                    showStartDownloadDialogR("", Constants.FACEBOOK_URL)
+                                    showStartDownloadDialogR("", FACEBOOK_URL)
                                 }
                             }
                         }
 
                         override fun onFailure(call: Call<FacebookVideo?>, t: Throwable) {
                             Utils.hideProgressDialog(activity)
-                            showStartDownloadDialogR("", Constants.FACEBOOK_URL)
+                            showStartDownloadDialogR("", FACEBOOK_URL)
                         }
                     })
                 } else {
@@ -564,7 +555,7 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                     if (response.isSuccessful) {
                         val facebookVideo = response.body()
                         if (facebookVideo == null) {
-                            showStartDownloadDialogR("", Constants.FACEBOOK_URL)
+                            showStartDownloadDialogR("", FACEBOOK_URL)
                             return
                         }
                         if (!facebookVideo.error) {
@@ -579,19 +570,19 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                                 }
                             }
                             if (map.containsKey("hd")) {
-                                showStartDownloadDialogR(map["hd"], Constants.FACEBOOK_URL)
+                                showStartDownloadDialogR(map["hd"], FACEBOOK_URL)
                             } else if (map.containsKey("sd")) {
-                                showStartDownloadDialogR(map["sd"], Constants.FACEBOOK_URL)
+                                showStartDownloadDialogR(map["sd"], FACEBOOK_URL)
                             } else Log.d("MainActivity.TAG", "onResponse: map is null")
                         } else {
-                            showStartDownloadDialogR("", Constants.FACEBOOK_URL)
+                            showStartDownloadDialogR("", FACEBOOK_URL)
                         }
                     }
                 }
 
                 override fun onFailure(call: Call<FacebookReel?>, t: Throwable) {
                     Utils.hideProgressDialog(activity)
-                    showStartDownloadDialogR("", Constants.FACEBOOK_URL)
+                    showStartDownloadDialogR("", FACEBOOK_URL)
                 }
             })
         }
@@ -610,7 +601,7 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                     if (response.isSuccessful) {
                         val instaVideo = response.body()
                         if (instaVideo == null) {
-                            showStartDownloadDialogR("", Constants.FACEBOOK_URL)
+                            showStartDownloadDialogR("", FACEBOOK_URL)
                             return
                         }
                         if (!instaVideo.error) {
@@ -634,27 +625,27 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                                             linkIndex = i
                                         }
                                     } catch (e: Exception) {
-                                        showStartDownloadDialogR("", Constants.INSTA_URL)
+                                        showStartDownloadDialogR("", INSTA_URL)
                                     }
                                 }
                             }
                             if (linkIndex != -1) {
                                 showStartDownloadDialogR(
                                     dataArrayList[linkIndex].url,
-                                    Constants.INSTA_URL
+                                    INSTA_URL
                                 )
                             } else {
-                                showStartDownloadDialogR("", Constants.INSTA_URL)
+                                showStartDownloadDialogR("", INSTA_URL)
                             }
                         } else {
-                            showStartDownloadDialogR("", Constants.INSTA_URL)
+                            showStartDownloadDialogR("", INSTA_URL)
                         }
                     }
                 }
 
                 override fun onFailure(call: Call<InstaVideo?>, t: Throwable) {
                     Utils.hideProgressDialog(activity)
-                    showStartDownloadDialogR("", Constants.INSTA_URL)
+                    showStartDownloadDialogR("", INSTA_URL)
                 }
             })
         }
@@ -762,12 +753,8 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                     .show()
                 return
             }
-            val fVideo: FVideo?
-            fVideo = startDownload(activity, videoUrl, urlType)
-            if (fVideo == null) {
-                return
-            }
-            downloadVideos.put(fVideo.getDownloadId(), fVideo)
+            val fVideo: FVideo = startDownload(activity, videoUrl, urlType) ?: return
+            downloadVideos[fVideo.downloadId] = fVideo
             edLink.setText("")
         }
 
@@ -775,11 +762,10 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
         binding.apply {
-            val id = v.id
-            when (id) {
+            when (v.id) {
 
                 R.id.btn_download -> {
-                    val ll = edLink!!.text.toString().trim { it <= ' ' }
+                    val ll = edLink.text.toString().trim { it <= ' ' }
                     if (ll == "") {
                         Utils.setToast(
                             this@DashBoardActivity,
@@ -794,16 +780,16 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
                         //Recheck url type if it previously no checked
                         if (urlType == 0) {
                             urlType =
-                                if (Utils.isInstaUrl(ll)) Constants.INSTA_URL else if (Utils.isSnapChatUrl(
+                                if (Utils.isInstaUrl(ll)) INSTA_URL else if (Utils.isSnapChatUrl(
                                         ll
                                     )
                                 ) {
-                                    Constants.SNAPCHAT_URL
+                                    SNAPCHAT_URL
                                 } else if (Utils.isLikeeUrl(ll)) {
-                                    Constants.LIKEE_url
+                                    LIKEE_url
                                 } else if (Utils.isMojUrl(ll)) {
-                                    Constants.MOZ_URL
-                                } else Constants.FACEBOOK_URL
+                                    MOZ_URL
+                                } else FACEBOOK_URL
                         }
                         when (urlType) {
                             FACEBOOK_URL -> getFacebookData()
@@ -856,28 +842,28 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
 
     }
 
-    val downloadComplete: BroadcastReceiver = object : BroadcastReceiver() {
+    private val downloadComplete: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-            if (Constants.downloadVideos.containsKey(id)) {
+            if (downloadVideos.containsKey(id)) {
                 Log.d("receiver", "onReceive: download complete")
                 val fVideo: FVideo? = db?.getVideo(id)
                 var videoPath: String? = null
-                if (fVideo?.getVideoSource() === FVideo.FACEBOOK) {
+                if (fVideo?.videoSource === FVideo.FACEBOOK) {
                     videoPath = Environment.getExternalStorageDirectory().toString() +
-                            "/Download" + Utils.RootDirectoryFacebook + fVideo?.getFileName()
-                } else if (fVideo?.getVideoSource() === FVideo.INSTAGRAM) {
+                            "/Download" + Utils.RootDirectoryFacebook + fVideo.fileName
+                } else if (fVideo?.videoSource === FVideo.INSTAGRAM) {
                     videoPath = Environment.getExternalStorageDirectory().toString() +
-                            "/Download" + Utils.RootDirectoryInsta + fVideo?.getFileName()
-                } else if (fVideo?.getVideoSource() === FVideo.SNAPCHAT) {
+                            "/Download" + Utils.RootDirectoryInsta + fVideo.fileName
+                } else if (fVideo?.videoSource === FVideo.SNAPCHAT) {
                     videoPath = Environment.getExternalStorageDirectory().toString() +
-                            "/Download" + Utils.RootDirectorySnapchat + fVideo?.getFileName()
-                } else if (fVideo?.getVideoSource() === FVideo.LIKEE) {
+                            "/Download" + Utils.RootDirectorySnapchat + fVideo.fileName
+                } else if (fVideo?.videoSource === FVideo.LIKEE) {
                     videoPath = Environment.getExternalStorageDirectory().toString() +
-                            "/Download" + Utils.RootDirectoryLikee + fVideo?.getFileName()
-                } else if (fVideo?.getVideoSource() === FVideo.MOZ) {
+                            "/Download" + Utils.RootDirectoryLikee + fVideo.fileName
+                } else if (fVideo?.videoSource === FVideo.MOZ) {
                     videoPath = Environment.getExternalStorageDirectory().toString() +
-                            "/Download" + Utils.RootDirectoryMoz + fVideo?.getFileName()
+                            "/Download" + Utils.RootDirectoryMoz + fVideo.fileName
                 }
 
                 val dialog = BottomSheetDialog(this@DashBoardActivity, R.style.SheetDialog)
@@ -918,46 +904,11 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
 
                 db?.updateState(id, FVideo.COMPLETE)
                 if (videoPath != null) db?.setUri(id, videoPath)
-                Constants.downloadVideos.remove(id)
+                downloadVideos.remove(id)
             }
         }
     }
 
-    private fun showRewardedAd(callback: () -> Unit, onDismissedEvent: () -> Unit) {
-        if (this.isConnected()) {
-            callback.invoke()
-            return
-        }
-        if (true) {
-            val ad: RewardedAd? =
-                googleManager.createRewardedAd()
-
-
-            if (ad == null) {
-                callback.invoke()
-            } else {
-                ad.fullScreenContentCallback = object : FullScreenContentCallback() {
-
-                    override fun onAdFailedToShowFullScreenContent(error: AdError) {
-                        super.onAdFailedToShowFullScreenContent(error)
-                        callback.invoke()
-                    }
-
-                    override fun onAdDismissedFullScreenContent() {
-                        onDismissedEvent.invoke()
-                    }
-                }
-
-                ad.show(this) {
-                    callback.invoke()
-                }
-
-            }
-        } else {
-            callback.invoke()
-        }
-
-    }
     fun showNatAd(): Boolean {
         return remoteConfig.nativeAd
     }
