@@ -22,6 +22,7 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -70,6 +71,7 @@ import retrofit2.Response
 import java.io.File
 import java.net.URL
 import javax.inject.Inject
+import kotlin.system.exitProcess
 
 @Suppress("DEPRECATION", "IMPLICIT_BOXING_IN_IDENTITY_EQUALS")
 @AndroidEntryPoint
@@ -103,6 +105,11 @@ class DashBoardActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        this@DashBoardActivity.onBackPressedDispatcher.addCallback(this) {
+            finishAffinity()
+            exitProcess(0)
+        }
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
