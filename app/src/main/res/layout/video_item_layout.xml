@@ -67,7 +67,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:foreground="?attr/selectableItemBackground"
-                android:src="@drawable/ic_fb"
+                android:src="@drawable/ic_video_file"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -77,7 +77,7 @@
                 android:layout_height="30dp"
                 android:layout_marginStart="16dp"
                 android:foreground="?attr/selectableItemBackground"
-                android:src="@drawable/ic_messenger"
+                android:src="@drawable/ic_video_file"
                 app:layout_constraintStart_toEndOf="@id/iv_fb"
                 app:layout_constraintTop_toTopOf="@id/iv_fb" />
 
@@ -87,7 +87,7 @@
                 android:layout_height="30dp"
                 android:layout_marginStart="16dp"
                 android:foreground="?attr/selectableItemBackground"
-                android:src="@drawable/ic_whatsapp"
+                android:src="@drawable/ic_video_file"
                 app:layout_constraintStart_toEndOf="@id/iv_messenger"
                 app:layout_constraintTop_toTopOf="@id/iv_messenger" />
 
@@ -107,7 +107,7 @@
                 android:layout_height="30dp"
                 android:layout_marginStart="16dp"
                 android:foreground="?attr/selectableItemBackground"
-                android:src="@drawable/ic_delete"
+                android:src="@drawable/ic_video_file"
                 app:layout_constraintStart_toEndOf="@id/iv_share"
                 app:layout_constraintTop_toTopOf="@id/iv_share" />
 

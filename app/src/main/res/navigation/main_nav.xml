@@ -6,26 +6,8 @@
     app:startDestination="@id/splashFragment">
 
     <fragment
-        android:id="@+id/homeFragment"
-        android:name="com.example.igreeldownloader.ui.presentation.home.HomeFragment"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_homeFragment_to_galleryFragment"
-            app:destination="@id/galleryFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/splashFragment"
         android:name="com.example.igreeldownloader.ui.presentation.splash.SplashFragment"
         android:label="fragment_splash"
-        tools:layout="@layout/fragment_splash" >
-        <action
-            android:id="@+id/action_splashFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/galleryFragment"
-        android:name="com.example.igreeldownloader.ui.presentation.gallery.GalleryFragment"
-        android:label="fragment_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        tools:layout="@layout/fragment_splash" />
 </navigation>

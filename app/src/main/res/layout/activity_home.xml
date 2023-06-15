@@ -108,13 +108,15 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_download"
-                android:layout_width="@dimen/_150sdp"
+                android:layout_marginEnd="@dimen/_27sdp"
+                android:layout_marginStart="@dimen/_27sdp"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/_40sdp"
-                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_50sdp"
                 android:background="@drawable/bg_button"
                 android:text="@string/download"
-                android:textColor="@color/white"
                 android:visibility="gone"
+                android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cardView2" />
